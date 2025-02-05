@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ImageConsoleApp;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-
 
 var switchMappings = new Dictionary<string, string>
 {
@@ -17,20 +17,17 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
 Console.WriteLine("***** Process Image *****");
 Console.WriteLine($"Processing {args[0]}");
 
-IConfiguration thumbnailConfig = configuration.GetSection("thumbnail");
-ProcessImage("Thumbnail", thumbnailConfig);;
+ImageConfig imageConfig = configuration.GetSection(nameof(ImageConfig)).Get<ImageConfig>();
 
-IConfiguration mediumConfig = configuration.GetSection("medium");
-ProcessImage("Medium", mediumConfig);
 
-IConfiguration largeConfig = configuration.GetSection("large");
-ProcessImage("Large", largeConfig);
+ProcessImage("Thumbnail", imageConfig.Thumbnail, imageConfig.CompressionLevel);
+ProcessImage("Medium", imageConfig.Medium, imageConfig.CompressionLevel);
+ProcessImage("Large", imageConfig.Large, imageConfig.CompressionLevel);
 
-Console.WriteLine($"Watermark: {configuration["watermarkText"]}");
-Console.WriteLine($"Compression Level: {configuration["compressionLevel"]}");
-
-static void ProcessImage(string imageSize, IConfiguration config)
+static void ProcessImage(string imageSize, ImageSizeConfig config, decimal compressionLevel)
 {
-	Console.WriteLine($"{imageSize} Width: {config["width"]}");
-	Console.WriteLine($"{imageSize} FilePrefix: {config["filePrefix"]}");
+	Console.WriteLine($"{imageSize} Width: {config.Width}");
+	Console.WriteLine($"{imageSize} FilePrefix: {config.FilePrefix}");
+	Console.WriteLine($"{imageSize} WaterMark: {config.WatermarkText}");
+	Console.WriteLine($"{imageSize} Compression Level: {compressionLevel}");
 }
